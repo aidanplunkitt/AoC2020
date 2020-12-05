@@ -12,11 +12,13 @@ def calc_seat_id(s):
     #     if i == 'R':
     #         col += 1
     # return row * 8 + col
-    return functools.reduce(lambda x, y: (x << 1) + int(y == 'B' or y == 'R'), line[:10], 0)
+    return functools.reduce(lambda x, y: (x << 1) + int(y in 'RB'), line[:10], 0)
 
-max_id = -1
+seats = [0] * 2**10
 with open('5.txt') as fp:
     for line in fp:
-        seat_id = functools.reduce(lambda x, y: (x << 1) + int(y == 'B' or y == 'R'), line[:10], 0)
-        max_id = max(max_id, seat_id)
-print(max_id)
+        seat_id = functools.reduce(lambda x, y: (x << 1) + int(y in 'RB'), line[:10], 0)
+        seats[seat_id] = 1
+
+my_seat = [i+1 for i, seat in enumerate(seats[1:-2]) if not seat and seats[i] and seats[i+2]]
+print(my_seat[0])

@@ -1,24 +1,12 @@
-import functools
+BP_LEN = 10
+min_seat, max_seat, seat_sum = 2**BP_LEN - 1, 0, 0
 
-def calc_seat_id(s):
-    # row = 0
-    # for i in line[:7]:
-    #     row <<= 1
-    #     if i == 'B':
-    #         row += 1
-    # col = 0
-    # for i in line[7:10]:
-    #     col <<= 1
-    #     if i == 'R':
-    #         col += 1
-    # return row * 8 + col
-    return functools.reduce(lambda x, y: (x << 1) + int(y in 'RB'), line[:10], 0)
-
-seats = [0] * 2**10
 with open('5.txt') as fp:
     for line in fp:
-        seat_id = functools.reduce(lambda x, y: (x << 1) + int(y in 'RB'), line[:10], 0)
-        seats[seat_id] = 1
+        seat_id = int(''.join(['1' if i in 'BR' else '0' for i in line[:BP_LEN]]), 2)
+        min_seat = min(min_seat, seat_id)
+        max_seat = max(max_seat, seat_id)
+        seat_sum += seat_id
 
-my_seat = [i+1 for i, seat in enumerate(seats[1:-2]) if not seat and seats[i] and seats[i+2]]
-print(my_seat[0])
+my_seat = sum(range(min_seat, max_seat + 1)) - seat_sum
+print(max_seat, my_seat)

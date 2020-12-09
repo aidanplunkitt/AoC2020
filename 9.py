@@ -25,4 +25,21 @@ with open('9.txt') as fp:
         q.popleft()
         q.append(curr)
 
+# part 1
 print(invalid)
+
+q.clear()
+qsum = 0
+with open('9.txt') as fp:
+    while qsum != invalid:
+        while qsum < invalid:
+            data = int(fp.readline().strip())
+            q.append(data)
+            qsum += data
+
+        while qsum > invalid:
+            qsum -= q.popleft()
+
+# part 2
+encryption_weakness = min(q) + max(q)
+print(encryption_weakness)

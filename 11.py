@@ -10,59 +10,73 @@ def count_occupied(A):
 def seat_counts(A):
     cache = [[0] * len(A[0]) for _ in A]
 
-    # fill inner matrix first, skipping borders
-    for i in range(1, len(A) - 1):
-        for j in range(1, len(A[0]) - 1):
-            if A[i][j] == '#':
-                for i_ in range(i-1, i+2):
-                    for j_ in range(j-1, j+2):
-                        cache[i_][j_] += 1
-                # exclude the cell itself
-                cache[i][j] -= 1
+    for i, row in enumerate(A):
+        for j, seat in enumerate(row):
+            if seat == '.': continue
 
-    # now do borders w/o corners
-    # top and bottom
-    for j in range(1, len(A[0]) - 1):
-        if A[0][j] == '#':
-            for i_ in range(0, 2):
-                for j_ in range(j-1, j+2):
-                    cache[i_][j_] += 1
-            cache[0][j] -=1
-        if A[-1][j] == '#':
-            for i_ in range(len(A) - 2, len(A)):
-                for j_ in range(j-1, j+2):
-                    cache[i_][j_] += 1
-            cache[-1][j] -=1
-    # left and right
-    for i in range(1, len(A) - 1):
-        if A[i][0] == '#':
-            for i_ in range(i-1, i+2):
-                for j_ in range(0, 2):
-                    cache[i_][j_] += 1
-            cache[i][0] -= 1
-        if A[i][-1] == '#':
-            for i_ in range(i-1, i+2):
-                for j_ in range(len(A[0]) - 2, len(A[0])):
-                    cache[i_][j_] += 1
-            cache[i][-1] -= 1
+            neighbors = []
+            # down
+            i_ = i + 1
+            while i_ < len(A):
+                if A[i_][j] != '.':
+                    neighbors.append((i_, j))
+                    break
+                i_ += 1
+            # up
+            i_ = i - 1
+            while i_ >= 0:
+                if A[i_][j] != '.':
+                    neighbors.append((i_, j))
+                    break
+                i_ -= 1
+            # right
+            j_ = j + 1
+            while j_ < len(A[0]):
+                if A[i][j_] != '.':
+                    neighbors.append((i, j_))
+                    break
+                j_ += 1
+            # left
+            j_ = j - 1
+            while j_ >= 0:
+                if A[i][j_] != '.':
+                    neighbors.append((i, j_))
+                    break
+                j_ -= 1
+            # NW diag
+            i_, j_ = i - 1, j - 1
+            while i_ >= 0 and j_ >= 0:
+                if A[i_][j_] != '.':
+                    neighbors.append((i_, j_))
+                    break
+                i_, j_ = i_ - 1, j_ - 1
+            # NE diag
+            i_, j_ = i - 1, j + 1
+            while i_ >= 0 and j_ < len(A[0]):
+                if A[i_][j_] != '.':
+                    neighbors.append((i_, j_))
+                    break
+                i_, j_ = i_ - 1, j_ + 1
+            # SW diag
+            i_, j_ = i + 1, j - 1
+            while i_ < len(A) and j_ >= 0:
+                if A[i_][j_] != '.':
+                    neighbors.append((i_, j_))
+                    break
+                i_, j_ = i_ + 1, j_ - 1
+            # SE diag
+            i_, j_ = i + 1, j + 1
+            while i_ < len(A) and j_ < len(A[0]):
+                if A[i_][j_] != '.':
+                    neighbors.append((i_, j_))
+                    break
+                i_, j_ = i_ + 1, j_ + 1
 
-    # corners (note this fails for matrices with a side <= 2)
-    if A[0][0] == '#':
-        cache[0][1] += 1
-        cache[1][0] += 1
-        cache[1][1] += 1
-    if A[0][-1] == '#':
-        cache[0][-2] += 1
-        cache[1][-1] += 1
-        cache[1][-2] += 1
-    if A[-1][0] == '#':
-        cache[-1][1] += 1
-        cache[-2][0] += 1
-        cache[-2][1] += 1
-    if A[-1][-1] == '#':
-        cache[-1][-2] += 1
-        cache[-2][-2] += 1
-        cache[-2][-1] += 1
+            occupied_neighbors = 0
+            for x, y in neighbors:
+                if A[x][y] == '#':
+                    occupied_neighbors += 1
+            cache[i][j] = occupied_neighbors
 
     return cache
 
@@ -71,7 +85,7 @@ def change_seat(occupied_neighbors, status):
     if status == 'L' and occupied_neighbors == 0:
         return '#'
 
-    if status == '#' and occupied_neighbors >= 4:
+    if status == '#' and occupied_neighbors >= 5:
         return 'L'
 
     return None
@@ -87,5 +101,5 @@ while changes:
             if new_seat := change_seat(cache[i][j], seat):
                 seats[i][j] = new_seat
                 changes = True
-# p1 answer
+
 print(count_occupied(seats))

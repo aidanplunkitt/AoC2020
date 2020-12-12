@@ -1,7 +1,6 @@
 DIR_MAP = {'N': (0,1), 'E': (1,0), 'S': (0,-1), 'W': (-1,0)}
-COMPASS = ['N', 'E', 'S', 'W']
-direction = 'E'
-location = [0,0]
+waypoint = [10,1]
+ship     = [0,0]
 with open('12.txt') as fp:
     for line in fp:
         line = line.strip()
@@ -9,13 +8,19 @@ with open('12.txt') as fp:
         num = int(line[1:])
         if op in 'LR':
             rot = num // 90
-            rot *= -1 if op == 'L' else 1
-            direction = COMPASS[(COMPASS.index(direction) + rot) % 4]
+            for i in range(rot):
+                if op == 'L': 
+                    waypoint = [-waypoint[1]] + [waypoint[0]]
+                else:
+                    waypoint = [waypoint[1]] + [-waypoint[0]]
             continue
         
-        curr_dir = direction if op == 'F' else op
-        for i in range(2):
-            location[i] += num * DIR_MAP[curr_dir][i]
+        if op == 'F':
+            for i in range(2):
+                ship[i] += num * waypoint[i]
+            continue
 
-# p1 answer
-print(abs(location[0]) + abs(location[1]))
+        for i in range(2):
+            waypoint[i] += num * DIR_MAP[op][i]
+
+print(abs(ship[0]) + abs(ship[1]))

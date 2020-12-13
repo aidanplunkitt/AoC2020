@@ -1,10 +1,9 @@
-departure, buses = [line.strip() for line in open('13.txt')]
-departure = int(departure)
-buses = [int(bus) for bus in buses.split(',') if bus != 'x']
-
-mintime, ans1 = departure, 0
-for bus in buses:
-    if (wait := bus - (departure % bus)) < mintime:
-        mintime, ans1 = wait, bus * wait
-
-print(ans1)
+_, buses = [line.strip() for line in open('13.txt')]
+buses = [(pos, int(bus)) for pos, bus in enumerate(buses.split(',')) if bus != 'x']
+print(buses)
+time = 0
+while True:
+    if all([(time + pos) % bus == 0 for pos, bus in buses]):
+        print(time)
+        break
+    time += buses[0][1]

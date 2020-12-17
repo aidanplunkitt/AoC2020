@@ -9,7 +9,7 @@ class Field:
 field_info, my_ticket, tickets = [line.split('\n') for line in open('16.txt').read().split('\n\n')]
 max_val = 0
 fields = []
-for field in field_info:
+for i, field in enumerate(field_info):
     *name, a, _, b = field.split(' ')
     name = ' '.join(name).strip(':')
     ranges = [[int(n) for n in r.split('-')] for r in (a, b)]
@@ -33,25 +33,25 @@ for ticket in tickets[1:]:
 # p1 answer
 print(error_rate)
 
-potential = [[0, []] for _ in t_matrix[0]]
-for col in range(len(t_matrix[0])):
+potential = [[0, set(), i] for i in range(len(t_matrix[0]))]
+for col in range(len(potential)):
     for field in fields:
         if all([field.ranges[0][0] <= t_matrix[n][col] <= field.ranges[0][1] or \
                 field.ranges[1][0] <= t_matrix[n][col] <= field.ranges[1][1] \
                 for n in range(len(t_matrix))]):
             potential[col][0] += 1
-            potential[col][1].append(field.name)
+            potential[col][1].add(field.name)
 
 product = 1
 assigned = set()
 potential.sort(key=lambda x: x[0])
 my_ticket = [int(n) for n in my_ticket[1].split(',')]
 for i in range(len(t_matrix[0])):
-    p_set = set(potential[i][1])
+    p_set = potential[i][1]
     f = p_set.difference(assigned).pop()
     assigned.add(f)
     if f.split()[0] == 'departure':
-        product *= my_ticket[i]
+        product *= my_ticket[potential[i][2]]
 
 # p2 answer
 print(product)

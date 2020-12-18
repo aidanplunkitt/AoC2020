@@ -1,4 +1,5 @@
 from collections import deque
+import math
 
 ops = {'+': lambda x, y: x+y,
        '*': lambda x, y: x*y}
@@ -21,12 +22,14 @@ def solve(i):
             nums.append(int(c))
         i += 1
 
-    while symbols:
-        op = symbols.popleft()
-        a, b = nums.popleft(), nums.popleft()
-        nums.appendleft(ops[op](a,b))
+    multiplicands = [nums.popleft()]
+    for op in symbols:
+        num = nums.popleft()
+        if op == '+':
+            num += multiplicands.pop()
+        multiplicands.append(num)
 
-    return i, nums.pop()
+    return i, math.prod(multiplicands)
 
 result = 0
 for expression in open('18.txt').read().splitlines():
